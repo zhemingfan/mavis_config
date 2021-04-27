@@ -52,7 +52,7 @@ class ImmutableDict(Mapping):
         return iter(self._data)
 
 
-def get_by_prefix(config, prefix):
+def get_by_prefix(config: Dict, prefix: str) -> Dict:
     return {k.replace(prefix, ''): v for k, v in config.items() if k.startswith(prefix)}
 
 

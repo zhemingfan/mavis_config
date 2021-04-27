@@ -36,4 +36,27 @@ jobs:
       run: |
         pytest tests -v \
           --junitxml=junit/test-results-${{ matrix.python-version }}.xml \
-          --durations=10
+          --cov mavis_config \
+          --cov-report term-missing \
+          --cov-report xml \
+          --durations=10 \
+          --cov-branch
+      env:
+        RUN_FULL: 1
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@master
+      with:
+        name: pytest-results-${{ matrix.python-version }}
+        path: junit/test-results-${{ matrix.python-version }}.xml
+        # Use always() to always run this step to publish test results when there are test failures
+      if: always()
+    - name: Update code coverage report to CodeCov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: ./coverage.xml
+        flags: unittests
+        env_vars: OS,PYTHON
+        name: codecov-umbrella
+        fail_ci_if_error: true
+      if: matrix.python-version == 3.8

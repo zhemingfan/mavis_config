@@ -4,6 +4,8 @@ try:
 except ImportError:  # pragma: no cover
     from collections import Mapping  # pragma: no cover
 
+import gzip
+import math
 import os
 from glob import glob
 from typing import Dict, List
@@ -147,6 +149,80 @@ def validate_config(config: Dict, stage: str = SUBCOMMAND.SETUP) -> None:
         for input_file in config[ref_type]:
             expanded.extend(bash_expands(input_file))
         config[ref_type] = expanded
+
+
+def count_total_rows(filenames: List[str]) -> int:
+    """
+    For some list of files, count the total cumulative lines excluding comments and blank lines
+    """
+    row_count = 0
+    for filename in filenames:
+        print(f'counting lines in {filename}')
+        if filename.endswith('.gz'):
+            with gzip.open(filename, 'rt') as fh:
+                lines = {l for l in fh.readlines() if not l.startswith('#') and l.strip()}
+                row_count += len(lines)
+        else:
+            with open(filename, 'r') as fh:
+                lines = {l for l in fh.readlines() if not l.startswith('#') and l.strip()}
+                row_count += len(lines)
+    return row_count
+
+
+def get_library_inputs(config: Dict, library_name: str) -> List[str]:
+    """
+    Get all the raw/initial input files for a given library name
+    """
+    lib_config = config['libraries'][library_name]
+    inputs = []
+    for assignment in lib_config['assign']:
+        if assignment in config.get('convert', {}):
+            inputs.extend(config['convert'][assignment]['inputs'])
+        else:
+            inputs.append(assignment)
+    return inputs
+
+
+def get_singularity_bindings(config: Dict) -> List[str]:
+    """
+    Extract bindings for singularity from the library inputs and reference files
+    specified in the JSON config file
+    """
+    inputs = []
+    output_dir = os.path.abspath(config['output_dir'])
+    for library_name in config['libraries']:
+        inputs.extend(get_library_inputs(config, library_name))
+
+        if config['libraries'][library_name].get('bam_file', ''):
+            inputs.append(config['libraries'][library_name]['bam_file'])
+
+        for files in get_by_prefix(config, 'reference.').values():
+            inputs.extend(files)
+
+    bindings = [f'{output_dir}:{output_dir}']
+
+    for path in {os.path.dirname(i) for i in inputs}:
+        if not path.startswith(output_dir):
+            bindings.append(f'{path}:{path}:ro')
+
+    return bindings
+
+
+def guess_total_batches(config: Dict, input_files) -> int:
+    """
+    Given a list of input files for a library, give an estimate of the optimal number
+    of jobs to split it into based on the config settings
+    """
+    # if not input by user, estimate the clusters based on the input files
+    max_files = config['cluster.max_files']
+    min_rows = config['cluster.min_clusters_per_file']
+    total_rows = count_total_rows(input_files)
+
+    if round(total_rows / max_files) >= min_rows:
+        # use max number of jobs
+        return max_files
+    else:
+        return math.ceil(total_rows / min_rows)
 
 
 DEFAULTS = {}  # type: ignore

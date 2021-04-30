@@ -16,10 +16,18 @@ DOC_REQS = [
     'mkdocs-simple-hooks==0.1.2',
 ]
 
+long_description = ''
+
+try:
+    with open('README.md', 'r') as fh:
+        long_description = fh.read()
+except Exception:  # do not fail install on README errors
+    pass
+
 
 DEPLOY_REQS = ['twine', 'm2r', 'wheel']
 
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 setup(
     name='mavis_config',
@@ -29,6 +37,8 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     description='Config validation for running MAVIS via Snakemake',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     install_requires=['snakemake>=6.1.1, <7', 'braceexpand'],
     extras_require={
         'docs': DOC_REQS,

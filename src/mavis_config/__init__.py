@@ -201,7 +201,7 @@ def get_singularity_bindings(config: Dict) -> List[str]:
 
     bindings = [f'{output_dir}:{output_dir}']
 
-    for path in {os.path.dirname(i) for i in inputs}:
+    for path in {os.path.abspath(os.path.dirname(i)) for i in inputs}:
         if not path.startswith(output_dir):
             bindings.append(f'{path}:{path}:ro')
 

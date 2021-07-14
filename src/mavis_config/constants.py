@@ -57,7 +57,9 @@ class MavisNamespace(metaclass=EnumType):
             ....
         """
         if value not in cls.values():
-            raise KeyError('value {0} is not a valid member of '.format(repr(value)), cls.values())
+            raise KeyError(
+                'value {0} is not a valid member of {1}'.format(repr(value), cls.values())
+            )
         return value
 
     @classmethod

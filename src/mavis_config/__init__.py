@@ -157,7 +157,6 @@ def count_total_rows(filenames: List[str]) -> int:
     """
     row_count = 0
     for filename in filenames:
-        print(f'counting lines in {filename}')
         if filename.endswith('.gz'):
             with gzip.open(filename, 'rt') as fh:
                 lines = {l for l in fh.readlines() if not l.startswith('#') and l.strip()}

@@ -157,7 +157,6 @@ def count_total_rows(filenames: List[str]) -> int:
     """
     row_count = 0
     for filename in filenames:
-        print(f'counting lines in {filename}')
         if filename.endswith('.gz'):
             with gzip.open(filename, 'rt') as fh:
                 lines = {l for l in fh.readlines() if not l.startswith('#') and l.strip()}
@@ -201,7 +200,7 @@ def get_singularity_bindings(config: Dict) -> List[str]:
 
     bindings = [f'{output_dir}:{output_dir}']
 
-    for path in {os.path.dirname(i) for i in inputs}:
+    for path in {os.path.abspath(os.path.dirname(i)) for i in inputs}:
         if not path.startswith(output_dir):
             bindings.append(f'{path}:{path}:ro')
 

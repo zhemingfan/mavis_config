@@ -27,13 +27,13 @@ except Exception:  # do not fail install on README errors
 
 DEPLOY_REQS = ['twine', 'm2r', 'wheel']
 
-VERSION = '1.1.2'
+VERSION = '2.0.0'
 
 setup(
-    name='mavis_config',
+    name='mavis_temp',
     version='{}'.format(VERSION),
-    url='https://github.com/bcgsc/mavis_config.git',
-    download_url='https://github.com/bcgsc/mavis_config/archive/v{}.tar.gz'.format(VERSION),
+    url='https://github.com/zhemingfan/mavis_config',
+    download_url='https://github.com/zhemingfan/mavis_config/archive/v{}.tar.gz'.format(VERSION),
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     description='Config validation for running MAVIS via Snakemake',
@@ -56,5 +56,4 @@ setup(
     data_files=[
         ('mavis_config', ['src/mavis_config/config.json', 'src/mavis_config/overlay.json'])
     ],
-    project_urls={'mavis_config': 'http://mavis.bcgsc.ca'},
 )

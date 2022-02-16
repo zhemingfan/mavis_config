@@ -36,7 +36,7 @@ jobs:
       run: |
         pytest tests -v \
           --junitxml=junit/test-results-${{ matrix.python-version }}.xml \
-          --cov mavis_config \
+          --cov mavis_temp \
           --cov-report term-missing \
           --cov-report xml \
           --durations=10 \

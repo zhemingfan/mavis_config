@@ -30,7 +30,7 @@ DEPLOY_REQS = ['twine', 'm2r', 'wheel']
 VERSION = '2.0.0'
 
 setup(
-    name='mavis_temp',
+    name='mavis_config',
     version='{}'.format(VERSION),
     url='https://github.com/zhemingfan/mavis_config',
     download_url='https://github.com/zhemingfan/mavis_config/archive/v{}.tar.gz'.format(VERSION),

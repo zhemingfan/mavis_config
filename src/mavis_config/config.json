@@ -44,6 +44,11 @@
             "description": "The minimum length (in base pairs) to retain a putative open reading frame (orf)",
             "type": "integer"
         },
+        "annotate.skip_illustrate": {
+            "default": false,
+            "description": "skip generating the illustration of the annotation stage within the MAVIS pipeline",
+            "type": "boolean"
+        },
         "bam_stats.distribution_fraction": {
             "default": 0.97,
             "description": "the proportion of the distribution to use in computing stdev",
@@ -777,5 +782,19 @@
             "type": "boolean"
         }
     },
+    "anyOf": [
+        {
+            "not": {
+                "properties": {
+                    "skip_stage.validate": {
+                        "const": true
+                    }
+                },
+                "required": [
+                    "reference.aligner_reference"
+                ]
+            }
+        }
+    ],
     "type": "object"
 }
